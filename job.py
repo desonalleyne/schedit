@@ -1,4 +1,4 @@
-import dateparser
+#import dateparser
 import time
 import json
 import logging
@@ -113,7 +113,8 @@ class Job(object):
                     raise ValueError("Error: Invalid values entered for 'days'. Input must be in binary format")
             if k == 'start_time':
                 try:
-                    v = dateparser.parse(v).time()
+                    
+                    #v = dateparser.parse(v).time()
                     approved[k] = str(v)
                 except ValueError as e:
                     raise ValueError("Error: Bad time format for 'start_time'. Please use HH:MMH:SS")
