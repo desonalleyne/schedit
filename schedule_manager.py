@@ -27,13 +27,11 @@ class ScheduleManager(object):
             initiliazes zones
         """
         logger.info("SchedIt Starting up")
+        self.configs = self.load_configs("config.json")
         self.jobs = []
-	#jobstores = {
-	#    'default': SQLAlchemyJobStore(url='mysql+pymysql://pi:security23@192.168.1.19/garden_man')
-	#}
         self.scheduler = BlockingScheduler()
-	self.scheduler.add_jobstore('sqlalchemy', url='mysql://app:security23@127.0.0.1/testdb')
-        self.configs = self.load_configs("jobs.json")
+        db = selc.configs.db
+	self.scheduler.add_jobstore('sqlalchemy', url='mysql://{}:{}@{}/{}'.format(db.username, db.password, db.host, db.name))
         self.load_zones(self.configs)
         #self.load_jobs(self.configs)
 #	self.start()
