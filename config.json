@@ -1,0 +1,79 @@
+{
+	"db":{
+		"host": "127.0.0.1",
+		"username": "",
+		"password": "",
+		"name": ""
+	},
+	"logging": {
+		"version": 1,
+		"formatters": {
+			"simple": {
+				"format": "[%(asctime)s] [%(levelname)s] %(name)s.%(funcName)s: %(message)s"
+			}
+		},
+		"filters": {
+			"nanpy": {
+				"name": "nanpy"
+			},
+			"peewee": {
+				"name": "peewee"
+			},
+			"ardio": {
+				"name": "ardio"
+			}
+		},
+		"handlers": {
+			"app":{
+				"level": "INFO",
+				"class": "logging.handlers.TimedRotatingFileHandler",
+				"filename": "logs/app.log",
+				"when": "M",
+				"formatter": "simple"
+			},
+			"db":{
+				"level": "DEBUG",
+				"class": "logging.handlers.TimedRotatingFileHandler",
+				"filename": "logs/db.log",
+				"when": "M",	
+				"formatter": "simple"
+			},
+			"nanpy":{
+				"level": "DEBUG",
+				"class": "logging.handlers.TimedRotatingFileHandler",
+				"filename": "logs/nanpy.log",
+				"when": "M",	
+				"formatter": "simple"	
+			},
+			"ardio":{
+				"level": "DEBUG",
+				"class": "logging.handlers.TimedRotatingFileHandler",
+				"filename": "logs/ardio.log",
+				"when": "M",	
+				"formatter": "simple"	
+			} 
+		},
+		"loggers": {
+			"app": {
+				"handlers": ["app"],
+				"level": "DEBUG"
+			},
+			"peewee": {
+				"handlers": ["db"],
+				"filters": ["peewee"],
+				"level": "DEBUG"		
+			},
+			"nanpy": {
+				"handlers": ["nanpy"],
+				"filters": ["nanpy"],
+				"level": "DEBUG"		
+			},
+			"ardio": {
+				"handlers": ["ardio"],
+				"filters": ["ardio"],
+				"level": "DEBUG"		
+			}
+		}
+	}
+}
+
