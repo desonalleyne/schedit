@@ -11,7 +11,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 import logging.config
 from datetime import *
-
+import logging_tree
 """
 logging.basicConfig(
     filename="schedulerManager.log",
@@ -19,7 +19,7 @@ logging.basicConfig(
     level=logging.INFO)
 from datetime import datetime, timedelta
 """
-logger = logging.getLogger('apscheduler')
+# logger = logging.getLogger('apscheduler')
 
 
 class ScheduleManager(object):
@@ -36,6 +36,8 @@ class ScheduleManager(object):
             initiliazes zones
         """
         self.configs = self.load_configs("config.json")
+        logging_tree.printout()
+
         logger = logging.getLogger(__name__)
         logger.info("SchedIt Starting up")
         self.jobs = []
@@ -59,7 +61,7 @@ class ScheduleManager(object):
         """Loads pre-configured schedules from file
         Returns dictionary with schedules.
         """
-        logger.info("Loading configs from '{}'".format(config))
+        # logger.info("Loading configs from '{}'".format(config))
         with open(config) as file:
             data = file.read()
             data = json.loads(data)
@@ -73,9 +75,9 @@ class ScheduleManager(object):
         logger.info("Loading schedules")
         schedules = Schedule.select()
         for schedule in schedules:
-            print schedule
 
             # datetime.time object is not serializable
+            # logger.debug(json.dumps(schedule))
             # convert datetime.time object outside of model_to_dict
             schedule.start_time = str(schedule.start_time)
             schedule = model_to_dict(schedule)
@@ -89,7 +91,7 @@ class ScheduleManager(object):
             schedule["route"]["target_group"]["zones"] = get_group_zones(
                 route["target_group"]["id"])
 
-            print "after:", json.dumps(schedule, sort_keys=True, indent=4)
+            logger.debug("after: "+json.dumps(schedule, sort_keys=True, indent=4))
             logger.debug("Loading schedule config: '{}'".format(
                 json.dumps(schedule)))
 
@@ -121,15 +123,15 @@ class ScheduleManager(object):
         logger.info("Scheduling schedule {}".format(schedule.id))
 
         hour, minute, second = schedule.start_time.split(":")
-        print hour, minute, second
+        logger.debug("{} {} {}".format(hour, minute, second))
         t = datetime.now()
         dt = datetime.now() + timedelta(seconds=3)
 
-        print str(t), str(dt)
+        #print str(t), str(dt)
         hour = dt.hour
         minute = dt.minute
         second = dt.second
-        print str(hour), str(minute), str(second)
+        #print str(hour), str(minute), str(second)
         # minute = schedule.start_time.split[":"][1]
         # second = schedule.start_time.split[':'][2]  # or "00"
         days = schedule.days

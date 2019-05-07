@@ -54,7 +54,11 @@
 			} 
 		},
 		"loggers": {
-			"app": {
+			"apscheduler": {
+				"handlers": ["app"],
+				"level": "DEBUG"
+			},
+			"__main__": {
 				"handlers": ["app"],
 				"level": "DEBUG"
 			},
