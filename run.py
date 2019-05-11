@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request
 # from flask_peewee.rest import RestAPI, UserAuthentication, RestResource
 # from flask_peewee.auth import Auth
 from flask_peewee.db import Database
-from models import *
+from models import *  # Zone, Route, Group, IntermediaryZoneGroup
 from playhouse.shortcuts import model_to_dict
 # from flask_api import status
 # from flasgger import Swagger
@@ -15,7 +15,12 @@ import logging
 # logger.setLevel(logging.DEBUG)
 # logger.addHandler(logging.StreamHandler())
 
-
+DATABASE = {
+    'name': 'schedit',
+    'engine': 'peewee.MySQLDatabase',
+    'user': 'schedit',
+    'password': 'schedit'
+}
 DEBUG = True
 SECRET_KEY = 'shhhh'
 
@@ -92,6 +97,7 @@ def pin(query=None):
 
 @app.route('/zone/<int:id_>', methods=['GET'])
 @app.route('/zone', methods=['GET', 'POST', 'PUT'])
+# @cross_origin(origins="http://localhost:3000")
 def zone(id_=None):
     print "Incoming {} request".format(request.method)
     print "Params: " + json.dumps(request.json)
