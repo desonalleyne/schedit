@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request
 # from flask_peewee.rest import RestAPI, UserAuthentication, RestResource
 # from flask_peewee.auth import Auth
 from flask_peewee.db import Database
-from models import *  # Zone, Route, Group, IntermediaryZoneGroup
+from models import *
 from playhouse.shortcuts import model_to_dict
 # from flask_api import status
 # from flasgger import Swagger
@@ -15,12 +15,7 @@ import logging
 # logger.setLevel(logging.DEBUG)
 # logger.addHandler(logging.StreamHandler())
 
-DATABASE = {
-    'name': 'schedit',
-    'engine': 'peewee.MySQLDatabase',
-    'user': 'schedit',
-    'password': 'schedit'
-}
+
 DEBUG = True
 SECRET_KEY = 'shhhh'
 
@@ -97,7 +92,6 @@ def pin(query=None):
 
 @app.route('/zone/<int:id_>', methods=['GET'])
 @app.route('/zone', methods=['GET', 'POST', 'PUT'])
-# @cross_origin(origins="http://localhost:3000")
 def zone(id_=None):
     print "Incoming {} request".format(request.method)
     print "Params: " + json.dumps(request.json)
@@ -155,7 +149,6 @@ def zone(id_=None):
         data = request.json
         id = data['id']
         zone = Zone.get(Zone.id == id)
-        print "zone found: ", model_to_dict(zone)
         query = Zone.update(
             name=data['name'],
             description=data['description'],
@@ -229,22 +222,16 @@ def route(id=None):
             #res.status_code = 404
             return res
 
-        print id
         out = []
         route = Route.get(id)
-        # for g in group:
-        #    out.append(model_to_dict(g))
         out = model_to_dict(route)
-        print out
         out['passthrough_group']['zones'] = get_group_zones(
             route.passthrough_group.id)
         out['target_group']['zones'] = get_group_zones(
             route.target_group.id)
         return jsonify(out)
     elif request.method == 'PUT':
-        print "Updating route"
         data = request.json
-        print data
         id = data['id']
         route = Route.get(id)
 
@@ -265,12 +252,10 @@ def route(id=None):
             p_zone_group = ZoneGroup.create(zone=zone, group=p_group)
             p_zone_group.save()
 
-        print "updating route {} {}".format(type(id), id)
         query = Route.update(
             name=data['name'],
             description=data['description'],
             source_zone=data['source_zone']).where(Route.id == id)
-        print query.execute()
 
         route = Route.get(id)
         out = model_to_dict(route)
@@ -290,7 +275,6 @@ def route(id=None):
         create route with source, target, passthrough IDs
         """
         data = request.json
-        print data
         target = data['target_group']
         passthrough = data['passthrough_group']
 
