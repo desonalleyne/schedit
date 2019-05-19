@@ -65,17 +65,6 @@ class Route(BaseModel):
     target_group = ForeignKeyField(Group)
 
 
-class Schedule(BaseModel):
-    id = AutoField(primary_key=True)
-    name = TextField()
-    description = TextField()
-    route = ForeignKeyField(Route)
-    days = TextField()
-    duration = IntegerField()
-    start_time = TimeField()
-    is_enabled = BooleanField(default=True)
-
-
 class User(BaseModel, BaseUser):
     username = CharField()
     password = CharField()
@@ -101,7 +90,18 @@ def get_group_zones(id_):
     return out
 
 
+def get_route(id):
+    out = []
+    route = Route.get(id)
+    out = model_to_dict(route)
+    out['passthrough_group']['zones'] = get_group_zones(
+        route.passthrough_group.id)
+    out['target_group']['zones'] = get_group_zones(
+        route.target_group.id)
+    return out
+
+
 # _init()
 db.init('schedit')
 
-db.create_tables([Schedule])
+# db.create_tables([Schedule])

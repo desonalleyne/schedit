@@ -1,3 +1,4 @@
+import logging
 import json
 from flask import Flask, jsonify, request
 # from flask_peewee.rest import RestAPI, UserAuthentication, RestResource
@@ -8,8 +9,8 @@ from playhouse.shortcuts import model_to_dict
 # from flask_api import status
 # from flasgger import Swagger
 from flask_cors import CORS, cross_origin
+from schedule_manager import ScheduleManager
 
-import logging
 # logger = logging.getLogger('peewee')
 #logger = logging.getLogger('flask_cors')
 # logger.setLevel(logging.DEBUG)
@@ -32,6 +33,9 @@ CORS(app)
 app.config.from_object(__name__)
 
 db = Database(app)
+
+sm = ScheduleManager()
+print "starting app"
 
 
 # auth = Auth(app, db)
@@ -228,13 +232,7 @@ def route(id=None):
             #res.status_code = 404
             return res
 
-        out = []
-        route = Route.get(id)
-        out = model_to_dict(route)
-        out['passthrough_group']['zones'] = get_group_zones(
-            route.passthrough_group.id)
-        out['target_group']['zones'] = get_group_zones(
-            route.target_group.id)
+        out = get_route(id)
         return jsonify(out)
     elif request.method == 'PUT':
         data = request.json
@@ -263,12 +261,7 @@ def route(id=None):
             description=data['description'],
             source_zone=data['source_zone']).where(Route.id == id)
 
-        route = Route.get(id)
-        out = model_to_dict(route)
-        out['passthrough_group']['zones'] = get_group_zones(
-            route.passthrough_group.id)
-        out['target_group']['zones'] = get_group_zones(
-            route.target_group.id)
+        out = get_route(id)
         return jsonify(out)
 
     elif request.method == 'POST':
@@ -311,6 +304,22 @@ def route(id=None):
         out['target_group']['zones'] = get_group_zones(
             route.target_group.id)
         return jsonify(out)
+
+
+@app.route('/job/<int:id>', methods=['GET'])
+@app.route('/job', methods=['GET', 'PUT', 'POST'])
+def job(id=None):
+    print request.method
+
+    if request.method == 'GET':
+        z = sm.scheduler.print_jobs()
+        print z
+        return jsonify(s)
+    elif request.method == 'POST':
+        s = request.json
+        job = sm.add_schedule(s)
+
+        return jsonify(job)
 
 
 if __name__ == '__main__':
