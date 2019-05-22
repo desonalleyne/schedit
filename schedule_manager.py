@@ -110,15 +110,15 @@ class ScheduleManager(object):
         logger.info("add_schedule called")
         logger.info("Scheduling  {}".format(schedule))
         # print schedule.start_time
-        # hour, minute, second = schedule.start_time.split(":")
-        # logger.info("{} {} {}".format(hour, minute, second))
+        hour, minute, second = schedule.start_time.split(":")
+        logger.info("{} {} {}".format(hour, minute, second))
 
-        t = datetime.now()
-        dt = datetime.now() + timedelta(seconds=5)
+        # t = datetime.now()
+        # dt = datetime.now() + timedelta(seconds=5)
         # print str(t), str(dt)
-        hour = dt.hour
-        minute = dt.minute
-        second = dt.second
+        # hour = dt.hour
+        # minute = dt.minute
+        # second = dt.second
         # print str(hour), str(minute), str(second)
         # minute = schedule.start_time.split[":"][1]
         # second = schedule.start_time.split[':'][2]  # or "00"
@@ -147,19 +147,16 @@ class ScheduleManager(object):
         logger.info("Job {} not found".format(id))
         return None
 
-    def get_schedules(self, active_only=False):
+    def get_schedules(self):
         """Returns JSON dict of schedules`"""
         logger.info("getting schedules")
-        active_schedules = []
-        schedules = self.scheduler.get_jobs()
-        for schedule in schedules:
-            if ((schedule.kwargs['is_enabled'] == active_only) or not active_only):
-                _schedule = schedule.kwargs
-                _schedule['id'] = schedule.id
-               # active_jobs.append(job.to_json())
-                active_schedules.append(_schedule)
-        logger.info("active schedules: {}".format(active_schedules))
-        return active_schedules
+        schedules = []
+        _schedules = self.scheduler.get_jobs()
+        for schedule in _schedules:
+                schedule = job_to_dict(schedule)
+                schedules.append(schedule)
+        logger.info("active schedules: {}".format(schedules))
+        return schedules
 
     def start(self):
         print(

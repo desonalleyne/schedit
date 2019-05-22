@@ -312,8 +312,7 @@ def job(id=None):
     print request.method
 
     if request.method == 'GET':
-        z = sm.scheduler.print_jobs()
-        print z
+        s = sm.get_schedules()
         return jsonify(s)
     elif request.method == 'POST':
         s = request.json
